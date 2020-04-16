@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Mime;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RandomUser.Business.Contract.LoggerService;
@@ -10,8 +11,9 @@ using RandomUser.Business.Model;
 
 namespace RandomUserApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly ILoggerManager _logger;
@@ -34,7 +36,7 @@ namespace RandomUserApi.Controllers
             var users = _repository.UserRepository.GetAll();
             _logger.LogInfo("Users.");
 
-            var usersResult = _mapper.Map<IEnumerable<UserDto>>(users);
+            var usersResult = _mapper.Map<IEnumerable<UserModel>>(users);
             return Ok(usersResult);
         }
 
@@ -47,7 +49,7 @@ namespace RandomUserApi.Controllers
             var user = _repository.UserRepository.GetById(id);
             _logger.LogInfo("User.");
 
-            var userResult = _mapper.Map<UserDto>(user);
+            var userResult = _mapper.Map<UserModel>(user);
             return Ok(userResult);
         }
 
@@ -56,7 +58,7 @@ namespace RandomUserApi.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Post([FromBody] UserDto user)
+        public IActionResult Post([FromBody] UserModel user)
         {
             if (user == null)
             {
@@ -70,15 +72,18 @@ namespace RandomUserApi.Controllers
             }
             var userEntity = _mapper.Map<User>(user);
             _repository.UserRepository.Add(userEntity);
-            _mapper.Map<UserDto>(user);
+            _mapper.Map<UserModel>(user);
             _repository.Save();
-            var createdUser = _mapper.Map<UserDto>(userEntity);
+            var createdUser = _mapper.Map<UserModel>(userEntity);
             return CreatedAtRoute("Get", new { id = user.Id }, createdUser);
         }
 
         // PUT: api/User/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] UserDto user)
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult Put(int id, [FromBody] UserModel user)
         {
             if (user == null)
             {
@@ -97,9 +102,11 @@ namespace RandomUserApi.Controllers
                 return NotFound();
             }
             _mapper.Map(user, userEntity);
+            userEntity.Id = id;
             _repository.UserRepository.Update(userEntity);
             _repository.Save();
-            return NoContent();
+            var updatedUser = _mapper.Map<UserModel>(userEntity);
+            return CreatedAtRoute("Get", new { id = user.Id }, updatedUser);
         }
 
         // DELETE: api/ApiWithActions/5
@@ -114,7 +121,7 @@ namespace RandomUserApi.Controllers
             }
             _repository.UserRepository.Remove(user);
             _repository.Save();
-            return NoContent();
+            return Accepted();
         }
     }
 }

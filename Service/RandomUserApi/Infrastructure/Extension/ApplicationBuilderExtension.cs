@@ -69,5 +69,13 @@ namespace RandomUserApi.Infrastructure.Extension
             oDataBuilder.EntitySet<User>("Users");
             return oDataBuilder.GetEdmModel();
         }
+
+        public static void UseCustomCors(this IApplicationBuilder app)
+        {
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+        }
     }
 }

@@ -27,5 +27,17 @@ namespace RandomUser.Business.Concrete.Utils
                 ProfileImage = u.ProfileImage
             });
         }
+
+        public static IEnumerable<UserAccount> GetUserAccountsWithAutoIncrement(string userAccountsDataPath)
+        {
+            var users = JsonConvert.DeserializeObject<List<UserAccount>>(File.ReadAllText(userAccountsDataPath));
+            return users.Select((a, i) => new UserAccount
+            {
+                Id = i + 1,
+                Username = a.Username,
+                Password = a.Password,
+                Token = a.Token 
+            });
+        }
     }
 }

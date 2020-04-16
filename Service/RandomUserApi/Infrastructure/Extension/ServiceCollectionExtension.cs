@@ -1,17 +1,20 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RandomUser.Business.Concrete.LoggerService;
 using RandomUser.Business.Concrete.Repository;
+using RandomUser.Business.Concrete.Services;
 using RandomUser.Business.Contract.LoggerService;
 using RandomUser.Business.Contract.Repository;
+using RandomUser.Business.Contract.Services;
 using RandomUser.Business.Entity;
-using RandomUserApi.Infrastructure.Options;
-using Swashbuckle.Swagger;
-using System;
+using RandomUser.Business.Entity.Model;
+using System.Text;
 
 namespace RandomUserApi.Infrastructure.Extension
 {
@@ -69,6 +72,39 @@ namespace RandomUserApi.Infrastructure.Extension
             {
                 x.SwaggerDoc("v1", new OpenApiInfo { Title = "Random User API", Version = "v1" });
             });
+        }
+
+        public static void ConfigureJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            // Configure strongly typed settings objects
+            var appSettingsSection = configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            // Configure JWT authentication
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+        }
+
+        public static void ConfigureDependencyInjection(this IServiceCollection services)
+        {
+            services.AddScoped<IUserAccountService, UserAccountService>();
         }
     }
 }

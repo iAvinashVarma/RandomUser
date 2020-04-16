@@ -1,0 +1,550 @@
+{
+	"info": {
+		"_postman_id": "1387910b-3eb6-4dc0-992f-9bb4cb4b4811",
+		"name": "RandomUserApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Token",
+			"item": [
+				{
+					"name": "GenerateToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "79f6a704-88df-4c7f-8210-ed36cb7053b1",
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201,202]);",
+									"});",
+									"",
+									"pm.test(\"Content-Type is present\", function () {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test('Schema is valid', function() {",
+									"  let schema = {",
+									"        \"id\": \"\",",
+									"        \"username\": \"\",",
+									"        \"password\": \"\",",
+									"        \"token\": \"\"",
+									"    };",
+									"  let jsonData = pm.response.json();",
+									"  pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Access token is present\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.access_token).not.eq(null);",
+									"    pm.environment.set(\"RUToken\", jsonData.token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"{{RUUser}}\",\r\n  \"password\": \"{{RUPassword}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{RUUrl}}/api/Auth",
+							"host": [
+								"{{RUUrl}}"
+							],
+							"path": [
+								"api",
+								"Auth"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "AddUser",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e1677280-5b21-405f-84a9-d895b36dbb4c",
+								"exec": [
+									"let title = \"Mr\";",
+									"let firstName = \"Avi\";",
+									"let lastName = \"Varma\";",
+									"let gender = 1;",
+									"let email = \"iavi@gmail.com\";",
+									"let address = \"NZ\";",
+									"let balance = \"$100209.99\";",
+									"let dateOfBirth = \"1990-04-02T10:08:19.757Z\";",
+									"",
+									"let newFirstName = \"Avinash\";",
+									"let newEmail = \"avinashvarma@gmail.com\"",
+									"",
+									"pm.globals.set(\"Title\", title)",
+									"pm.globals.set(\"FirstName\", firstName)",
+									"pm.globals.set(\"LastName\", lastName)",
+									"pm.globals.set(\"Gender\", gender)",
+									"pm.globals.set(\"Email\", email)",
+									"pm.globals.set(\"Address\", address)",
+									"pm.globals.set(\"Balance\", balance)",
+									"pm.globals.set(\"DateOfBirth\", dateOfBirth)",
+									"",
+									"pm.globals.set(\"NewFirstName\", newFirstName)",
+									"pm.globals.set(\"NewEmail\", newEmail)"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "0a59c184-7638-48b0-a829-0c21d261c26d",
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Status code name is Created\", function () {",
+									"    pm.response.to.have.status(\"Created\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type is of application json\", function () {",
+									"    let contentType = pm.response.headers.get(\"Content-Type\");",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"    pm.expect(contentType.startsWith(\"application/json\")).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"UserId is present\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).not.eq(null);",
+									"    pm.globals.set(\"UserId\", jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"{{Title}}\",\r\n  \"firstName\": \"{{FirstName}}\",\r\n  \"lastName\": \"{{LastName}}\",\r\n  \"gender\": {{Gender}},\r\n  \"email\": \"{{Email}}\",\r\n  \"address\": \"{{Address}}\",\r\n  \"dateOfBirth\": \"{{DateOfBirth}}\",\r\n  \"balance\": \"{{Balance}}\",\r\n  \"profileImage\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{RUUrl}}/api/User",
+							"host": [
+								"{{RUUrl}}"
+							],
+							"path": [
+								"api",
+								"User"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUsers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2009a487-f056-4ab6-83b4-e7142b60dfb3",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status code name is OK\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type is of application json\", function () {",
+									"    let contentType = pm.response.headers.get(\"Content-Type\");",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"    pm.expect(contentType.startsWith(\"application/json\")).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Contains atleast one user record\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.be.above(0);",
+									"});",
+									"",
+									"pm.test('Schema is valid', function() {",
+									"  let schema = [{",
+									"        \"id\": 1,",
+									"        \"title\": \"Mr\",",
+									"        \"firstName\": \"Jose\",",
+									"        \"lastName\": \"Hand\",",
+									"        \"gender\": 1,",
+									"        \"email\": \"mintgreenturtle66@gmail.com\",",
+									"        \"address\": \"67232 Thiel Parkways\",",
+									"        \"dateOfBirth\": \"1990-04-02T23:23:21.9731204+12:00\",",
+									"        \"createdDate\": \"2020-04-15T23:23:21.9731204+12:00\",",
+									"        \"modifiedDate\": \"2020-04-16T21:23:21.9731204+12:00\",",
+									"        \"balance\": \"$4,953.40\",",
+									"        \"profileImage\": \"\"",
+									"    }];",
+									"  let jsonData = pm.response.json();",
+									"  pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{RUUrl}}/api/User",
+							"host": [
+								"{{RUUrl}}"
+							],
+							"path": [
+								"api",
+								"User"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUserById",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2009a487-f056-4ab6-83b4-e7142b60dfb3",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status code name is OK\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type is of application json\", function () {",
+									"    let contentType = pm.response.headers.get(\"Content-Type\");",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"    pm.expect(contentType.startsWith(\"application/json\")).to.be.true;",
+									"});",
+									"",
+									"pm.test('Schema is valid', function() {",
+									"  let schema = {",
+									"        \"id\": 1,",
+									"        \"title\": \"Mr\",",
+									"        \"firstName\": \"Jose\",",
+									"        \"lastName\": \"Hand\",",
+									"        \"gender\": 1,",
+									"        \"email\": \"mintgreenturtle66@gmail.com\",",
+									"        \"address\": \"67232 Thiel Parkways\",",
+									"        \"dateOfBirth\": \"1990-04-02T23:23:21.9731204+12:00\",",
+									"        \"createdDate\": \"2020-04-15T23:23:21.9731204+12:00\",",
+									"        \"modifiedDate\": \"2020-04-16T21:23:21.9731204+12:00\",",
+									"        \"balance\": \"$4,953.40\",",
+									"        \"profileImage\": \"\"",
+									"    };",
+									"  let jsonData = pm.response.json();",
+									"  pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Match UserId\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    let userId = pm.globals.get(\"UserId\");",
+									"    pm.expect(jsonData.id).to.eql(userId);",
+									"});",
+									"",
+									"pm.test(\"Match FirstName\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    let firstName = pm.globals.get(\"FirstName\");",
+									"    pm.expect(jsonData.firstName).to.eql(firstName);",
+									"});",
+									"",
+									"pm.test(\"Match LastName\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    let lastName = pm.globals.get(\"LastName\");",
+									"    pm.expect(jsonData.lastName).to.eql(lastName);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{RUUrl}}/api/User/{{UserId}}",
+							"host": [
+								"{{RUUrl}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"{{UserId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2009a487-f056-4ab6-83b4-e7142b60dfb3",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Status code name is Created\", function () {",
+									"    pm.response.to.have.status(\"Created\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type is of application json\", function () {",
+									"    let contentType = pm.response.headers.get(\"Content-Type\");",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"    pm.expect(contentType.startsWith(\"application/json\")).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Check if update is successful\", function () {",
+									"    let status = pm.response.text();",
+									"    console.log(status);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"{{Title}}\",\r\n  \"firstName\": \"{{NewFirstName}}\",\r\n  \"lastName\": \"{{LastName}}\",\r\n  \"gender\": {{Gender}},\r\n  \"email\": \"{{NewEmail}}\",\r\n  \"address\": \"{{Address}}\",\r\n  \"dateOfBirth\": \"{{DateOfBirth}}\",\r\n  \"balance\": \"{{Balance}}\",\r\n  \"profileImage\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{RUUrl}}/api/User/{{UserId}}",
+							"host": [
+								"{{RUUrl}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"{{UserId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUpdatedUserById",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2009a487-f056-4ab6-83b4-e7142b60dfb3",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status code name is OK\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type is of application json\", function () {",
+									"    let contentType = pm.response.headers.get(\"Content-Type\");",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"    pm.expect(contentType.startsWith(\"application/json\")).to.be.true;",
+									"});",
+									"",
+									"pm.test('Schema is valid', function() {",
+									"  let schema = {",
+									"        \"id\": 1,",
+									"        \"title\": \"Mr\",",
+									"        \"firstName\": \"Jose\",",
+									"        \"lastName\": \"Hand\",",
+									"        \"gender\": 1,",
+									"        \"email\": \"mintgreenturtle66@gmail.com\",",
+									"        \"address\": \"67232 Thiel Parkways\",",
+									"        \"dateOfBirth\": \"1990-04-02T23:23:21.9731204+12:00\",",
+									"        \"createdDate\": \"2020-04-15T23:23:21.9731204+12:00\",",
+									"        \"modifiedDate\": \"2020-04-16T21:23:21.9731204+12:00\",",
+									"        \"balance\": \"$4,953.40\",",
+									"        \"profileImage\": \"\"",
+									"    };",
+									"  let jsonData = pm.response.json();",
+									"  pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Match UserId\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    let userId = pm.globals.get(\"UserId\");",
+									"    pm.expect(jsonData.id).to.eql(userId);",
+									"});",
+									"",
+									"pm.test(\"Match New FirstName\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    let firstName = pm.globals.get(\"NewFirstName\");",
+									"    pm.expect(jsonData.firstName).to.eql(firstName);",
+									"});",
+									"",
+									"pm.test(\"Match New LastName\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    let email = pm.globals.get(\"NewEmail\");",
+									"    pm.expect(jsonData.email).to.eql(email);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{RUUrl}}/api/User/{{UserId}}",
+							"host": [
+								"{{RUUrl}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"{{UserId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RemoveUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2009a487-f056-4ab6-83b4-e7142b60dfb3",
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"});",
+									"",
+									"pm.test(\"Status code name is Accepted\", function () {",
+									"    pm.response.to.have.status(\"Accepted\");",
+									"});",
+									"",
+									"pm.test(\"Content-Type check\", function () {",
+									"    let contentType = pm.response.headers.get(\"Content-Type\");",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"pm.test(\"Check if update is successful\", function () {",
+									"    let status = pm.response.text();",
+									"    console.log(status);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{RUUrl}}/api/User/{{UserId}}",
+							"host": [
+								"{{RUUrl}}"
+							],
+							"path": [
+								"api",
+								"User",
+								"{{UserId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{RUToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "132a82d5-b97e-47d8-aa11-246b4c8a3934",
+				"type": "text/javascript",
+				"exec": [
+					"pm.variables.set(\"RUUser\", \"Avi\");",
+					"pm.variables.set(\"RUPassword\", \"Abcd1234\");"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "6b6acaa2-7a5d-4ffd-b187-fe3ccf8c7e9c",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "4abecab2-43bd-40eb-90fe-cc7abdb9cc1f",
+			"key": "RUUser",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "8e18da51-bcd6-46f3-8faa-b43ffee9673d",
+			"key": "RUPassword",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}

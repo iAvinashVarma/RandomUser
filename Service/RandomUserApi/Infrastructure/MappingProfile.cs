@@ -8,10 +8,10 @@ namespace RandomUserApi.Infrastructure
     {
         public MappingProfile()
         {
-            CreateMap<User, UserDto>();
-            CreateMap<UserDto, User>();
+            CreateMap<User, UserModel>();
+            CreateMap<UserModel, User>();
             CreateMap<User, User>();
-            CreateMap<UserDto, UserDto>();
+            CreateMap<UserModel, UserModel>();
         }
     }
 }

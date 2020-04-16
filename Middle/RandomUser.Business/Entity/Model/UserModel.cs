@@ -4,7 +4,7 @@ using System;
 
 namespace RandomUser.Business.Entity.Dto
 {
-    public class UserDto : IEntity
+    public class UserModel : IEntity
     {
         public int Id { get; set; }
 

@@ -38,6 +38,8 @@ namespace RandomUserApi
             services.ConfigureMapper();
             services.ConfigureSwagger();
             services.AddControllers();
+            services.ConfigureJwtAuthentication(Configuration);
+            services.ConfigureDependencyInjection();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +57,10 @@ namespace RandomUserApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCustomCors();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
