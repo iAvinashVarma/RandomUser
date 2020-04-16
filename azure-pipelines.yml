@@ -29,12 +29,14 @@ steps:
     configuration: '$(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
+  displayName: 'RandomUser API Tests'
   inputs:
     command: 'test'
-    projects: '**/*Test/*.csproj'
+    projects: '**/*.sln'
     arguments: '--configuration $(buildConfiguration)'
 
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifacts'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'RandomUserDrop'
