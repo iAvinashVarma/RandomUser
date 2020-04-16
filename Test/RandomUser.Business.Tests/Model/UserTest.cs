@@ -20,7 +20,7 @@ namespace RandomUser.Business.Tests.Model
         }
 
         [Test, Order(1)]
-        public void CheckIfUsersAreLoadedAvailable()
+        public void CheckIfUsersDataCanBeLoadedAndAvailable()
         {
             var hasUsers = Users.Any();
             Assert.IsTrue(hasUsers);

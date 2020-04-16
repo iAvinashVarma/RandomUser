@@ -1,10 +1,16 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
+using Microsoft.OData.Edm;
 using RandomUser.Business.Concrete.Utils;
 using RandomUser.Business.Entity;
+using RandomUser.Business.Model;
 using RandomUserApi.Infrastructure.Options;
+using System;
 using System.IO;
 
 namespace RandomUserApi.Infrastructure.Extension
@@ -46,6 +52,22 @@ namespace RandomUserApi.Infrastructure.Extension
                 context.Users.AddRange(user);
                 context.SaveChanges();
             }
+        }
+
+        public static void UseCustomMvc(this IApplicationBuilder app)
+        {
+            app.UseMvc(r =>
+            {
+                r.Select().Filter();
+                r.MapODataServiceRoute("odata", "odata", GetEdmModel());
+            });
+        }
+
+        private static IEdmModel GetEdmModel()
+        {
+            var oDataBuilder = new ODataConventionModelBuilder();
+            oDataBuilder.EntitySet<User>("Users");
+            return oDataBuilder.GetEdmModel();
         }
     }
 }

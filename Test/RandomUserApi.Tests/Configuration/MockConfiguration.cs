@@ -13,17 +13,6 @@ namespace RandomUserApi.Tests.Configuration
 {
     public static class MockConfiguration
     {
-        private static readonly IMapper mapper;
-
-        static MockConfiguration()
-        {
-            var mapperConfiguration = new MapperConfiguration(c =>
-            {
-                c.AddProfile(new MappingProfile());
-            });
-            mapper = mapperConfiguration.CreateMapper();
-        }
-
         public static Mock<IUserRepository> MockVehicleRepository
         {
             get
@@ -43,6 +32,22 @@ namespace RandomUserApi.Tests.Configuration
                 mockVehicleRepository.Setup(m => m.GetById(It.IsAny<int>()))
                     .Returns((int o) => users.Where(v => v.Id.Equals(o)).Single());
 
+                // Return user by first name
+                mockVehicleRepository.Setup(m => m.GetUsersByFirstName(It.IsAny<string>()))
+                    .Returns((string f) => users.Where(v => v.FirstName.Equals(f, StringComparison.OrdinalIgnoreCase)).AsQueryable());
+
+                // Return user by last name
+                mockVehicleRepository.Setup(m => m.GetUsersByLastName(It.IsAny<string>()))
+                    .Returns((string l) => users.Where(v => v.LastName.Equals(l, StringComparison.OrdinalIgnoreCase)).AsQueryable());
+
+                // Return user by limit
+                mockVehicleRepository.Setup(m => m.GetUsersByLimit(It.IsAny<int>()))
+                    .Returns((int l) => users.OrderByDescending(u => u.ModifiedDate).Take(l).AsQueryable());
+
+                // Return user by id
+                mockVehicleRepository.Setup(m => m.GetById(It.IsAny<int>()))
+                    .Returns((int o) => users.Where(v => v.Id.Equals(o)).Single());
+
                 // Allow to save user
                 mockVehicleRepository.Setup(m => m.Add(It.IsAny<User>()))
                     .Returns((User target) =>
@@ -51,6 +56,7 @@ namespace RandomUserApi.Tests.Configuration
                         var modifiedDate = DateTime.Now;
                         if (target.Id.Equals(default))
                         {
+                            target.Id = users.Max(u => u.Id);
                             target.CreatedDate = createdDate;
                             target.ModifiedDate = modifiedDate;
                             users.Add(target);
@@ -66,7 +72,7 @@ namespace RandomUserApi.Tests.Configuration
                             else
                             {
                                 users.Remove(original);
-                                mapper.Map(original, target);
+                                original = target;
                                 original.ModifiedDate = modifiedDate;
                                 users.Add(original);
                                 return true;
@@ -78,19 +84,31 @@ namespace RandomUserApi.Tests.Configuration
                 mockVehicleRepository.Setup(m => m.Update(It.IsAny<User>()))
                     .Returns((User target) =>
                     {
-                        var original = users.Where(q => q.Id.Equals(target.Id)).Single();
-                        if (original == null)
+                        var createdDate = DateTime.Now;
+                        var modifiedDate = DateTime.Now;
+                        if (target.Id.Equals(default))
                         {
-                            return false;
+                            target.Id = users.Max(u => u.Id);
+                            target.CreatedDate = createdDate;
+                            target.ModifiedDate = modifiedDate;
+                            users.Add(target);
+                            return true;
                         }
                         else
                         {
-                            var modifiedDate = DateTime.Now;
-                            users.Remove(original);
-                            mapper.Map(original, target);
-                            original.ModifiedDate = modifiedDate; 
-                            users.Add(original);
-                            return true;
+                            var original = users.Where(q => q.Id.Equals(target.Id)).Single();
+                            if (original == null)
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                users.Remove(original);
+                                original = target;
+                                original.ModifiedDate = modifiedDate;
+                                users.Add(original);
+                                return true;
+                            }
                         }
                     });
 

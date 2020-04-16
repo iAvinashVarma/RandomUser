@@ -1,11 +1,14 @@
 ﻿using RandomUser.Business.Model;
+using System.Linq;
 
 namespace RandomUser.Business.Contract.Repository
 {
     public interface IUserRepository : IRepositoryBase<User>
     {
-        User GetUserByFirstName(string firstName);
+        IQueryable<User> GetUsersByLimit(int limit);
 
-        User GetUserByLastName(string lastName);
+        IQueryable<User> GetUsersByFirstName(string firstName);
+
+        IQueryable<User> GetUsersByLastName(string lastName);
     }
 }

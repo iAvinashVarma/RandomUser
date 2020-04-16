@@ -1,3 +1,4 @@
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,10 +9,12 @@ using RandomUser.Business.Concrete.Utils;
 using RandomUser.Business.Entity;
 using RandomUser.Business.Model;
 using RandomUserApi.Infrastructure.Extension;
+using RandomUserApi.Infrastructure.Middleware;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 
 namespace RandomUserApi
 {
@@ -54,6 +57,8 @@ namespace RandomUserApi
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
             app.UseEndpoints(endpoints =>
             {
