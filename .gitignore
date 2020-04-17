@@ -261,3 +261,4 @@ paket-files/
 __pycache__/
 *.pyc
 /Service/VehicleManagementSystemApi.Postman/Results/TEST-junitReport.xml
+/Results
