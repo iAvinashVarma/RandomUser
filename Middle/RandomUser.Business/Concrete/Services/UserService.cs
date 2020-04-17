@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using RandomUser.Business.Concrete.Utils;
 using RandomUser.Business.Contract.Services;
 using RandomUser.Business.Entity.Model;
+using RandomUser.Business.Insfrastructure.Security;
 using RandomUser.Business.Model;
 using System;
 using System.Collections.Generic;
@@ -28,13 +29,21 @@ namespace RandomUser.Business.Concrete.Services
 
         public UserAccount Authenticate(string username, string password)
         {
-            var userAccount = UserAccounts.SingleOrDefault(x => x.Username == username && x.Password == password);
+            var userAccount = UserAccounts.SingleOrDefault(x => x.Username == username);
 
             // Return null if user not found
             if (userAccount == null)
                 return null;
 
-            // authentication successful so generate jwt token
+            // Verify password
+            var hashBytes = Convert.FromBase64String(userAccount.Password);
+            var hash = new PasswordHash(hashBytes);
+            if(!hash.Verify(password))
+            {
+                throw new UnauthorizedAccessException("Invalid password.");
+            }
+
+            // Authentication successful so generate jwt token
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(AppSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
