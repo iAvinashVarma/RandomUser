@@ -88,7 +88,7 @@ namespace RandomUserApi.Tests.Configuration
                         var modifiedDate = DateTime.Now;
                         if (target.Id.Equals(default))
                         {
-                            target.Id = users.Max(u => u.Id);
+                            target.Id = users.Max(u => u.Id) + 1;
                             target.CreatedDate = createdDate;
                             target.ModifiedDate = modifiedDate;
                             users.Add(target);

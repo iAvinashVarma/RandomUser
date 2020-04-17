@@ -105,7 +105,7 @@ namespace RandomUserApi.Tests.Controllers
         {
             var user = new User
             {
-                Id = 75,
+                Id = 74,
                 Title = "Mr",
                 FirstName = "Pruthvi",
                 LastName = "Varma",
